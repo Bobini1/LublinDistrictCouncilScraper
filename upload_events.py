@@ -43,6 +43,7 @@ class Calendar:
                 'dateTime': (dt_tz + datetime.timedelta(hours=Calendar.EVENT_LENGTH)).isoformat(),
                 'timeZone': time_zone,
             },
+            'transparency': 'transparent'
         }
 
         # Insert the event
