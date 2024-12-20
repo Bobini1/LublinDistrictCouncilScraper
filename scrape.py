@@ -31,6 +31,10 @@ def get_events(month, year):
     url = f"{base_url}/rady-dzielnic/posiedzenia/{month}-{year},miesiac.html"
     soup = BeautifulSoup(requests.get(url, headers=headers).content, "html.parser")
     events = soup.find_all("div", class_="event")
+    while next_page := soup.find("a", text="następna strona"):
+        url = f"{base_url}{next_page['href']}"
+        soup = BeautifulSoup(requests.get(url, headers=headers).content, "html.parser")
+        events.extend(soup.find_all("div", class_="event"))
     event_objects = []
     for event in events:
         date = event.select_one(".event-date").text.strip()
