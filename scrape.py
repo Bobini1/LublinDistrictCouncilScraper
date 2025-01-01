@@ -28,7 +28,7 @@ def get_description_and_place(href):
 
 
 def get_events(month, year):
-    url = f"{base_url}/rady-dzielnic/posiedzenia/{month}-{year},miesiac.html"
+    url = f"{base_url}rady-dzielnic/posiedzenia/{month:02}-{year},miesiac.html"
     soup = BeautifulSoup(requests.get(url, headers=headers).content, "html.parser")
     events = soup.find_all("div", class_="event")
     while next_page := soup.find("a", text="następna strona"):
