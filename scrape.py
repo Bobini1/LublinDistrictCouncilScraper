@@ -39,7 +39,10 @@ def get_events(month, year):
     for event in events:
         date = event.select_one(".event-date").text.strip()
         time = event.select_one(".event-time").text.strip()
-        dt = datetime.datetime.strptime(f"{date} {time}", "%d-%m-%Y %H:%M")
+        if time:
+            dt = datetime.datetime.strptime(f"{date} {time}", "%d-%m-%Y %H:%M")
+        else:
+            dt = datetime.datetime.strptime(date, "%d-%m-%Y")
         title = event.select_one(".event-title").text.split(" - ")[0].strip()
         href = event.select_one(".event-title a")["href"]
         description, place = get_description_and_place(href)
