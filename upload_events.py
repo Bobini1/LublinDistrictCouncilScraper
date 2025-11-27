@@ -46,11 +46,12 @@ class Calendar:
                 'dateTime': (dt_tz + datetime.timedelta(hours=Calendar.EVENT_LENGTH)).isoformat(),
                 'timeZone': time_zone,
             },
-            'transparency': 'transparent'
+            'attendees': [],
+            'transparency': 'transparent',
         }
 
         # Insert the event
-        created_event = self.service.events().insert(calendarId=self.calendar_id, body=event).execute()
+        created_event = self.service.events().insert(calendarId=self.calendar_id, body=event, sendUpdates="none").execute()
         print(f"Event created: {created_event.get('htmlLink')}")
 
 
