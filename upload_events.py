@@ -25,6 +25,9 @@ class Calendar:
             creds = authenticate_user()
 
         self.service = build('calendar', 'v3', credentials=creds)
+        # get owner of calendar
+        calendar_info = self.service.calendars().get(calendarId=self.calendar_id).execute()
+        print(f"Calendar info: {calendar_info}")
 
     def send_event(self, event: Event):
         dt_tz = event.datetime.replace(tzinfo=ZoneInfo(time_zone))
