@@ -6,6 +6,7 @@ import sys
 from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Set
 
 from mattermost_notifier import MattermostClient
+from notifier_config import load_environment
 
 
 CHANNEL_TYPES = {
@@ -316,6 +317,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
+    load_environment()
     args = parse_args(argv)
     args.url = args.url.strip()
     if not args.url:

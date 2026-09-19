@@ -11,6 +11,7 @@ mkShell {
     python311Packages.google-auth-oauthlib
     python311Packages.pytz
     python311Packages.beautifulsoup4
+    python311Packages.python-dotenv
   ];
 
   shellHook = ''

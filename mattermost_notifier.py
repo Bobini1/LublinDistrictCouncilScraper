@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 import requests
 
 from event import Event
+from notifier_config import load_environment
 from scrape import get_events, increment_month
 
 
@@ -203,6 +204,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
+    load_environment()
     url = os.environ.get("MATTERMOST_URL", "").strip()
     token = os.environ.get("MATTERMOST_BOT_TOKEN", "")
     channel_id = os.environ.get("MATTERMOST_CHANNEL_ID", "")
