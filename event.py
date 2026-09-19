@@ -8,3 +8,4 @@ class Event:
     title: str
     description: str
     place: str
+    source_url: str = ""

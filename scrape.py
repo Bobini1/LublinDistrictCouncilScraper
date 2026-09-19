@@ -1,4 +1,5 @@
 import datetime
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 import requests
@@ -9,10 +10,13 @@ base_url = "https://lublin.eu/"
 start_month = datetime.datetime.now().month
 start_year = datetime.datetime.now().year
 headers = {'User-Agent': 'Mozilla/5.0'}
+request_timeout = 30
 
 
 def get_description_and_place(href):
-    soup = BeautifulSoup(requests.get(f"{base_url}{href}", headers=headers).content, "html.parser")
+    response = requests.get(urljoin(base_url, href), headers=headers, timeout=request_timeout)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.content, "html.parser")
     title = soup.select_one(".title").text.strip()
     # module-section bizcard-details
     header = soup.find("div", class_="module-section bizcard-details")
@@ -29,11 +33,15 @@ def get_description_and_place(href):
 
 def get_events(month, year):
     url = f"{base_url}rady-dzielnic/posiedzenia/{month:02}-{year},miesiac.html"
-    soup = BeautifulSoup(requests.get(url, headers=headers).content, "html.parser")
+    response = requests.get(url, headers=headers, timeout=request_timeout)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.content, "html.parser")
     events = soup.find_all("div", class_="event")
-    while next_page := soup.find("a", text="następna strona"):
-        url = f"{base_url}{next_page['href']}"
-        soup = BeautifulSoup(requests.get(url, headers=headers).content, "html.parser")
+    while next_page := soup.find("a", string="następna strona"):
+        url = urljoin(base_url, next_page['href'])
+        response = requests.get(url, headers=headers, timeout=request_timeout)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.content, "html.parser")
         events.extend(soup.find_all("div", class_="event"))
     event_objects = []
     for event in events:
@@ -46,7 +54,7 @@ def get_events(month, year):
         title = event.select_one(".event-title").text.split(" - ")[0].strip()
         href = event.select_one(".event-title a")["href"]
         description, place = get_description_and_place(href)
-        event_objects.append(Event(dt, title, description, place))
+        event_objects.append(Event(dt, title, description, place, urljoin(base_url, href)))
     return event_objects
 
 

@@ -1,8 +1,8 @@
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 import datetime
-import pytz
 from zoneinfo import ZoneInfo
 from event import Event
 
@@ -17,12 +17,13 @@ class Calendar:
     def __init__(self, calendar_id):
         self.calendar_id = calendar_id
         # Authenticate and create the service
-        creds = None
-        if creds := load_credentials():
-            print("Using existing credentials.")
-        else:
-            print("No existing credentials. Running authentication flow.")
-            creds = authenticate_user()
+        creds = load_credentials()
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                creds = authenticate_user()
+            save_credentials(creds)
 
         self.service = build('calendar', 'v3', credentials=creds)
         # get owner of calendar
@@ -103,6 +104,8 @@ def load_credentials():
     """Load saved credentials from file."""
     try:
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
         return creds
     except FileNotFoundError:
         return None
